@@ -7,12 +7,12 @@ dist/
 build/
 .cache/
 
-# Variables de entorno (NUNCA subir .env real, sí se sube .env.example)
+# Variables de entorno
 .env
 .env.*
 !.env.example
 
-# Prisma (si generas el cliente en una carpeta local personalizada)
+# Prisma
 src/generated/prisma/
 
 # Logs y sistema

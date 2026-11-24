@@ -8,9 +8,15 @@ Backend de catálogo e inventario. Corre en `http://localhost:3001`.
 corepack pnpm dev
 ```
 
-La API pública está bajo `/api/catalog`. La administración está bajo `/api/admin`.
+La API pública está bajo `/api/catalog`. La administración está bajo `/api/admin` y exige una sesión de administradora.
 
-Para proteger el panel antes de publicar, agrega `ADMIN_API_KEY` a `.env`. Cuando exista, cada solicitud administrativa debe enviar el encabezado `x-admin-key` con ese valor. En desarrollo local, mientras la variable no exista, las rutas administrativas quedan abiertas.
+Configura `ADMIN_EMAIL`, `ADMIN_PASSWORD` (mínimo 12 caracteres) y opcionalmente `ADMIN_NAME` en `.env`. Después ejecuta `corepack pnpm db:create-admin` para crear o actualizar la cuenta administradora. La sesión se conserva en una cookie HTTP-only por siete días.
+
+## Autenticación
+
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
 
 ## Catálogo público
 

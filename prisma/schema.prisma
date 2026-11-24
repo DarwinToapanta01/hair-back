@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductKind {
+  EXTENSION
+  WIG
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum InventoryMovementType {
+  INITIAL
+  ADJUSTMENT
+  SALE
+  RETURN
+}
+
+model Category {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  kind ProductKind
+  products Product[]
+  @@unique([kind, name])
+}
+
+model Texture {
+  id String @id @default(cuid())
+  name String @unique
+  slug String @unique
+  products Product[]
+}
+
+model Color {
+  id String @id @default(cuid())
+  name String @unique
+  code String @unique
+  hex String?
+  variants ProductVariant[]
+}
+
+model Length {
+  id String @id @default(cuid())
+  inches Int @unique
+  variants ProductVariant[]
+}
+
+model Product {
+  id String @id @default(cuid())
+  kind ProductKind
+  name String
+  slug String @unique
+  description String?
+  status ProductStatus @default(DRAFT)
+  featured Boolean @default(false)
+  categoryId String?
+  textureId String?
+  category Category? @relation(fields: [categoryId], references: [id])
+  texture Texture? @relation(fields: [textureId], references: [id])
+  variants ProductVariant[]
+  images ProductImage[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([kind, status])
+}
+
+model ProductVariant {
+  id String @id @default(cuid())
+  productId String
+  colorId String
+  lengthId String
+  sku String @unique
+  price Decimal @db.Decimal(10, 2)
+  stock Int @default(0)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color Color @relation(fields: [colorId], references: [id])
+  length Length @relation(fields: [lengthId], references: [id])
+  images ProductImage[]
+  inventoryMovements InventoryMovement[]
+  @@unique([productId, colorId, lengthId])
+  @@index([stock])
+}
+
+model InventoryMovement {
+  id String @id @default(cuid())
+  variantId String
+  type InventoryMovementType
+  quantity Int
+  previousStock Int
+  resultingStock Int
+  note String?
+  createdAt DateTime @default(now())
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  @@index([variantId, createdAt])
+}
+
+model ProductImage {
+  id String @id @default(cuid())
+  url String
+  alt String
+  position Int @default(0)
+  productId String?
+  variantId String?
+  product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  @@index([productId, position])
+  @@index([variantId, position])
+}

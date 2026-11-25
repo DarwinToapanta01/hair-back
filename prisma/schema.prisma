@@ -30,6 +30,12 @@ enum UserRole {
   CUSTOMER
 }
 
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
 model User {
   id String @id @default(cuid())
   email String @unique
@@ -49,6 +55,49 @@ model Session {
   createdAt DateTime @default(now())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId, expiresAt])
+}
+
+model Customer {
+  id String @id @default(cuid())
+  name String
+  phone String @unique
+  email String?
+  orders Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id String @id @default(cuid())
+  code String @unique
+  customerId String
+  status OrderStatus @default(PENDING)
+  subtotal Decimal @db.Decimal(10, 2)
+  shippingCost Decimal @default(0) @db.Decimal(10, 2)
+  total Decimal @db.Decimal(10, 2)
+  city String
+  address String
+  notes String?
+  customer Customer @relation(fields: [customerId], references: [id])
+  items OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id String @id @default(cuid())
+  orderId String
+  variantId String
+  productName String
+  sku String
+  colorName String
+  lengthInches Int
+  unitPrice Decimal @db.Decimal(10, 2)
+  quantity Int
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+  @@index([orderId])
 }
 
 model Category {
@@ -113,6 +162,7 @@ model ProductVariant {
   length Length @relation(fields: [lengthId], references: [id])
   images ProductImage[]
   inventoryMovements InventoryMovement[]
+  orderItems OrderItem[]
   @@unique([productId, colorId, lengthId])
   @@index([stock])
 }

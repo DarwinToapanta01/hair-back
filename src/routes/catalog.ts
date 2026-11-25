@@ -23,7 +23,7 @@ export const catalogRoutes: FastifyPluginAsync = async (app) => {
     return products.map(product => ({
       id: product.id, slug: product.slug, name: product.name, kind: product.kind, texture: product.texture?.name,
       image: product.images[0]?.url ?? '', description: product.description ?? '',
-      variants: product.variants.map(variant => ({ sku: variant.sku, color: variant.color.name, length: variant.length.inches, price: Number(variant.price), stock: variant.stock }))
+      variants: product.variants.map(variant => ({ id: variant.id, sku: variant.sku, color: variant.color.name, length: variant.length.inches, price: Number(variant.price), stock: variant.stock }))
     }))
   })
 
@@ -36,7 +36,7 @@ export const catalogRoutes: FastifyPluginAsync = async (app) => {
     return {
       id: product.id, slug: product.slug, name: product.name, kind: product.kind, texture: product.texture?.name,
       image: product.images[0]?.url ?? '', images: product.images.map(image => ({ url: image.url, alt: image.alt })), description: product.description ?? '',
-      variants: product.variants.map(variant => ({ sku: variant.sku, color: variant.color.name, length: variant.length.inches, price: Number(variant.price), stock: variant.stock }))
+      variants: product.variants.map(variant => ({ id: variant.id, sku: variant.sku, color: variant.color.name, length: variant.length.inches, price: Number(variant.price), stock: variant.stock }))
     }
   })
 }

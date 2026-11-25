@@ -4,6 +4,7 @@ import Fastify from 'fastify'
 import { prisma } from './lib/prisma.js'
 import { findAuthenticatedAdmin } from './lib/auth.js'
 import { authRoutes } from './routes/auth.js'
+import { orderRoutes } from './routes/orders.js'
 import { catalogRoutes } from './routes/catalog.js'
 import { adminRoutes } from './routes/admin.js'
 
@@ -28,6 +29,7 @@ app.addHook('onRequest', async (request, reply) => {
 })
 await app.register(authRoutes, { prefix: '/api' })
 await app.register(catalogRoutes, { prefix: '/api' })
+await app.register(orderRoutes, { prefix: '/api' })
 await app.register(adminRoutes, { prefix: '/api' })
 app.addHook('onClose', async () => prisma.$disconnect())
 
